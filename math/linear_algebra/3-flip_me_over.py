@@ -20,4 +20,3 @@ def matrix_transpose(matrix):
     for c in range(cols):
         transposed.append([matrix[r][c] for r in range(rows)])
     return transposed
-
