@@ -4,4 +4,3 @@ def matrix_shape(matrix):
     if isinstance(matrix[0], list):
         shape.extend(matrix_shape(matrix[0]))
     return shape
-
