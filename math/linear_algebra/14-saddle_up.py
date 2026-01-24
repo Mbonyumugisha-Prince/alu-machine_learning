@@ -1,19 +1,21 @@
 #!/usr/bin/env python3
-"""Module to concatenate two numpy arrays along a given axis."""
+"""Module that performs matrix multiplication using numpy."""
 
 import numpy as np
 
 
-def np_cat(mat1, mat2, axis=0):
+def np_matmul(mat1, mat2):
     """
-    Concatenate two numpy arrays along the specified axis.
+    Multiply two numpy arrays using matrix multiplication.
 
     Args:
-        mat1 (numpy.ndarray): First array.
-        mat2 (numpy.ndarray): Second array.
-        axis (int, optional): Axis along which to concatenate. Defaults to 0.
+        mat1 (numpy.ndarray): First 2D array.
+        mat2 (numpy.ndarray): Second 2D array.
 
     Returns:
-        numpy.ndarray: New concatenated array.
+        numpy.ndarray: Product of mat1 and mat2.
+        None: If matrices cannot be multiplied.
     """
-    return np.concatenate((mat1, mat2), axis=axis)
+    if mat1.shape[1] != mat2.shape[0]:
+        return None
+    return np.matmul(mat1, mat2)
