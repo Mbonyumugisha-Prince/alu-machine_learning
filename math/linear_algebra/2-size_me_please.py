@@ -3,6 +3,7 @@
 This module contains a function to calculate the shape of a nested matrix.
 """
 
+
 def matrix_shape(matrix):
     """
     Calculate the shape of a nested matrix.
@@ -17,4 +18,3 @@ def matrix_shape(matrix):
     if isinstance(matrix[0], list):
         shape.extend(matrix_shape(matrix[0]))
     return shape
-
