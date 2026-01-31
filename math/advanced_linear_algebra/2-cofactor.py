@@ -33,7 +33,9 @@ def cofactor(matrix):
     """Calculates the cofactor matrix of a matrix"""
 
     # Type check
-    if not isinstance(matrix, list) or not all(isinstance(row, list) for row in matrix):
+    if not isinstance(matrix, list) or not all(
+        isinstance(row, list) for row in matrix
+    ):
         raise TypeError("matrix must be a list of lists")
 
     # Empty or not square
@@ -56,7 +58,8 @@ def cofactor(matrix):
         for j in range(n):
             sub_matrix = [
                 row[:j] + row[j + 1:]
-                for idx, row in enumerate(matrix) if idx != i
+                for idx, row in enumerate(matrix)
+                if idx != i
             ]
             minor_det = determinant(sub_matrix)
             cofactor_value = ((-1) ** (i + j)) * minor_det
@@ -64,4 +67,4 @@ def cofactor(matrix):
         cofactor_matrix.append(row_cofactors)
 
     return cofactor_matrix
-
+≈
