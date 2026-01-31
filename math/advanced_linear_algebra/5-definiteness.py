@@ -11,12 +11,13 @@ def definiteness(matrix):
     if not isinstance(matrix, np.ndarray):
         raise TypeError("matrix must be a numpy.ndarray")
 
-    # Check for empty or non-square
-    if (matrix.size == 0 or len(matrix.shape) != 2 or
-            matrix.shape[0] != matrix.shape[1]):
+    # Check for empty or non-square matrix
+    if (matrix.size == 0
+            or len(matrix.shape) != 2
+            or matrix.shape[0] != matrix.shape[1]):
         return None
 
-    # Symmetrize to avoid floating point asymmetry issues
+    # Check for symmetry
     if not np.allclose(matrix, matrix.T):
         return None
 
@@ -26,6 +27,7 @@ def definiteness(matrix):
     except np.linalg.LinAlgError:
         return None
 
+    # Determine definiteness
     pos = np.all(eigvals > 0)
     pos_semi = np.all(eigvals >= 0) and not pos
     neg = np.all(eigvals < 0)
@@ -43,4 +45,3 @@ def definiteness(matrix):
         return "Indefinite"
     else:
         return None
-
