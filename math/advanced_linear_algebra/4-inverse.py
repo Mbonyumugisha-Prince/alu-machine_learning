@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Module that calculates the inverse of a square matrix."""
 
+
 def inverse(matrix):
     """Calculates the inverse of a square matrix."""
 
@@ -28,7 +29,8 @@ def inverse(matrix):
             return m[0][0] * m[1][1] - m[0][1] * m[1][0]
         det = 0
         for c in range(len(m)):
-            sub = [[m[i][j] for j in range(len(m)) if j != c] for i in range(1, len(m))]
+            sub = [[m[i][j] for j in range(len(m)) if j != c]
+                   for i in range(1, len(m))]
             det += ((-1) ** c) * m[0][c] * determinant(sub)
         return det
 
@@ -50,12 +52,14 @@ def inverse(matrix):
 
     # Transpose a matrix
     def transpose(m):
-        return [[m[j][i] for j in range(len(m))] for i in range(len(m))]
+        return [[m[j][i] for j in range(len(m))]
+                for i in range(len(m))]
 
     cof = cofactor(matrix)
     adj = transpose(cof)
 
     # Multiply adjugate by 1/det to get inverse
-    inv = [[adj[i][j] / det for j in range(n)] for i in range(n)]
+    inv = [[adj[i][j] / det for j in range(n)]
+           for i in range(n)]
     return inv
 
