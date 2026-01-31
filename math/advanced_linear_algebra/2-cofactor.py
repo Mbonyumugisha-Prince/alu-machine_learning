@@ -6,7 +6,6 @@ Module to calculate the cofactor matrix of a matrix
 
 def determinant(matrix):
     """Helper function to calculate determinant"""
-
     if matrix == [[]]:
         return 1
 
@@ -67,4 +66,3 @@ def cofactor(matrix):
         cofactor_matrix.append(row_cofactors)
 
     return cofactor_matrix
-≈
