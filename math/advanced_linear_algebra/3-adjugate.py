@@ -3,6 +3,7 @@
 Module to calculate the adjugate matrix of a matrix
 """
 
+
 def determinant(matrix):
     """Helper function to calculate determinant"""
     if matrix == [[]]:
@@ -63,8 +64,6 @@ def cofactor(matrix):
 
 def adjugate(matrix):
     """Calculates the adjugate matrix of a matrix"""
-
-    # Type and square check
     if not isinstance(matrix, list) or not all(
         isinstance(row, list) for row in matrix
     ):
@@ -78,11 +77,9 @@ def adjugate(matrix):
         if len(row) != n:
             raise ValueError("matrix must be a non-empty square matrix")
 
-    # 1x1 matrix
     if n == 1:
         return [[1]]
 
-    # Adjugate = transpose of cofactor matrix
     cof_matrix = cofactor(matrix)
     adj_matrix = [[cof_matrix[j][i] for j in range(n)] for i in range(n)]
 
