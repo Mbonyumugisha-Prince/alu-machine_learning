@@ -6,6 +6,7 @@ import numpy as np
 
 def definiteness(matrix):
     """Calculates the definiteness of a square NumPy matrix."""
+
     # Check type
     if not isinstance(matrix, np.ndarray):
         raise TypeError("matrix must be a numpy.ndarray")
