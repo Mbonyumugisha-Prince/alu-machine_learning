@@ -1,102 +1,58 @@
 #!/usr/bin/env python3
-"""
-Module to calculate the inverse of a matrix
-"""
-
-
-def determinant(matrix):
-    """Helper function to calculate determinant"""
-    if matrix == [[]]:
-        return 1
-
-    n = len(matrix)
-
-    if n == 1:
-        return matrix[0][0]
-
-    if n == 2:
-        return matrix[0][0] * matrix[1][1] - matrix[0][1] * matrix[1][0]
-
-    det = 0
-    for col in range(n):
-        sub_matrix = [
-            row[:col] + row[col + 1:]
-            for row in matrix[1:]
-        ]
-        det += ((-1) ** col) * matrix[0][col] * determinant(sub_matrix)
-
-    return det
-
-
-def cofactor(matrix):
-    """Helper function to calculate the cofactor matrix"""
-    if not isinstance(matrix, list) or not all(
-        isinstance(row, list) for row in matrix
-    ):
-        raise TypeError("matrix must be a list of lists")
-
-    if matrix == []:
-        raise ValueError("matrix must be a non-empty square matrix")
-
-    n = len(matrix)
-    for row in matrix:
-        if len(row) != n:
-            raise ValueError("matrix must be a non-empty square matrix")
-
-    if n == 1:
-        return [[1]]
-
-    cofactor_matrix = []
-    for i in range(n):
-        row_cofactors = []
-        for j in range(n):
-            sub_matrix = [
-                row[:j] + row[j + 1:]
-                for idx, row in enumerate(matrix)
-                if idx != i
-            ]
-            minor_det = determinant(sub_matrix)
-            row_cofactors.append((-1) ** (i + j) * minor_det)
-        cofactor_matrix.append(row_cofactors)
-
-    return cofactor_matrix
-
-
-def adjugate(matrix):
-    """Helper function to calculate the adjugate matrix"""
-    cof_matrix = cofactor(matrix)
-    n = len(cof_matrix)
-    return [[cof_matrix[j][i] for j in range(n)] for i in range(n)]
-
 
 def inverse(matrix):
-    """Calculates the inverse of a square matrix"""
-    # Type check
-    if not isinstance(matrix, list) or not all(
-        isinstance(row, list) for row in matrix
-    ):
+    """Calculates the inverse of a square matrix."""
+
+    # Check if matrix is a list of lists
+    if not isinstance(matrix, list) or not all(isinstance(row, list) for row in matrix):
         raise TypeError("matrix must be a list of lists")
 
-    # Empty or not square
-    if matrix == []:
+    # Check if matrix is non-empty and square
+    if len(matrix) == 0 or any(len(row) != len(matrix) for row in matrix):
         raise ValueError("matrix must be a non-empty square matrix")
 
     n = len(matrix)
-    for row in matrix:
-        if len(row) != n:
-            raise ValueError("matrix must be a non-empty square matrix")
 
-    # 1x1 matrix
+    # Handle 1x1 matrix
     if n == 1:
+        if matrix[0][0] == 0:
+            return None
         return [[1 / matrix[0][0]]]
+
+    # Helper function: calculate determinant
+    def determinant(m):
+        if len(m) == 1:
+            return m[0][0]
+        if len(m) == 2:
+            return m[0][0]*m[1][1] - m[0][1]*m[1][0]
+        det = 0
+        for c in range(len(m)):
+            sub = [[m[i][j] for j in range(len(m)) if j != c] for i in range(1, len(m))]
+            det += ((-1) ** c) * m[0][c] * determinant(sub)
+        return det
 
     det = determinant(matrix)
     if det == 0:
         return None
 
-    adj = adjugate(matrix)
-    # Divide each element of adjugate by determinant
-    inv_matrix = [[adj[i][j] / det for j in range(n)] for i in range(n)]
+    # Helper function: get cofactor matrix
+    def cofactor(m):
+        cof = []
+        for r in range(len(m)):
+            row = []
+            for c in range(len(m)):
+                sub = [[m[i][j] for j in range(len(m)) if j != c] for i in range(len(m)) if i != r]
+                row.append(((-1) ** (r + c)) * determinant(sub))
+            cof.append(row)
+        return cof
 
-    return inv_matrix
+    # Transpose a matrix
+    def transpose(m):
+        return [[m[j][i] for j in range(len(m))] for i in range(len(m))]
 
+    cof = cofactor(matrix)
+    adj = transpose(cof)
+
+    # Multiply adjugate by 1/det to get inverse
+    inv = [[adj[i][j] / det for j in range(n)] for i in range(n)]
+    return inv
