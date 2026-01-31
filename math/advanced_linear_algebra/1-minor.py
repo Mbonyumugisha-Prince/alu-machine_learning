@@ -63,4 +63,3 @@ def minor(matrix):
         minor_matrix.append(row_minors)
 
     return minor_matrix
-
