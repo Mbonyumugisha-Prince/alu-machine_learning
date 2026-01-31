@@ -12,7 +12,8 @@ def definiteness(matrix):
         raise TypeError("matrix must be a numpy.ndarray")
 
     # Check for empty or non-square
-    if matrix.size == 0 or len(matrix.shape) != 2 or matrix.shape[0] != matrix.shape[1]:
+    if (matrix.size == 0 or len(matrix.shape) != 2 or
+            matrix.shape[0] != matrix.shape[1]):
         return None
 
     # Symmetrize to avoid floating point asymmetry issues
