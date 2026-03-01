@@ -1,86 +1,63 @@
 #!/usr/bin/env python3
 """
-Module to calculate the adjugate matrix of a matrix
+Module `3-adjugate`
+This module calculates the adjugate matrix of a given square matrix
 """
 
 
-def determinant(matrix):
-    """Helper function to calculate determinant"""
-    if matrix == [[]]:
-        return 1
+def adjugate(matrix):
+    """
+    Calculate the adjugate matrix of a given square matrix.
 
-    n = len(matrix)
+    The adjugate matrix is the transpose of the cofactor matrix.
 
-    if n == 1:
-        return matrix[0][0]
+    Args:
+    matrix (list of lists): The input matrix whose adjugate matrix
+    is to be calculated.
+    Each inner list represents a row of the matrix.
 
-    if n == 2:
-        return matrix[0][0] * matrix[1][1] - matrix[0][1] * matrix[1][0]
+    Returns:
+    list of lists: The adjugate matrix of the input matrix.
 
-    det = 0
-    for col in range(n):
-        sub_matrix = [
-            row[:col] + row[col + 1:]
-            for row in matrix[1:]
-        ]
-        det += ((-1) ** col) * matrix[0][col] * determinant(sub_matrix)
-
-    return det
-
-
-def cofactor(matrix):
-    """Helper function to calculate the cofactor matrix"""
+    Raises:
+    TypeError: If the input is not a list of lists.
+    ValueError: If the input matrix is not square or is empty.
+    """
     if not isinstance(matrix, list) or not all(
-        isinstance(row, list) for row in matrix
-    ):
+            isinstance(row, list) for row in matrix):
         raise TypeError("matrix must be a list of lists")
 
-    if matrix == []:
-        raise ValueError("matrix must be a non-empty square matrix")
-
     n = len(matrix)
-    for row in matrix:
-        if len(row) != n:
-            raise ValueError("matrix must be a non-empty square matrix")
+    if n == 0 or any(len(row) != n for row in matrix):
+        raise ValueError("matrix must be a non-empty square matrix")
 
     if n == 1:
         return [[1]]
+
+    def minor(mat, i, j):
+        """Calculate the minor of matrix mat for element at (i, j)."""
+        return [row[:j] + row[j + 1:] for row in (mat[:i] + mat[i + 1:])]
+
+    def determinant(mat):
+        """Calculate the determinant of a matrix."""
+        if len(mat) == 1:
+            return mat[0][0]
+        if len(mat) == 2:
+            return mat[0][0] * mat[1][1] - mat[0][1] * mat[1][0]
+        det = 0
+        for j in range(len(mat)):
+            det += ((-1) ** j) * mat[0][j] * determinant(minor(mat, 0, j))
+        return det
 
     cofactor_matrix = []
     for i in range(n):
-        row_cofactors = []
+        cofactor_row = []
         for j in range(n):
-            sub_matrix = [
-                row[:j] + row[j + 1:]
-                for idx, row in enumerate(matrix)
-                if idx != i
-            ]
-            minor_det = determinant(sub_matrix)
-            row_cofactors.append((-1) ** (i + j) * minor_det)
-        cofactor_matrix.append(row_cofactors)
+            minor_det = determinant(minor(matrix, i, j))
+            cofactor_row.append((-1) ** (i + j) * minor_det)
+        cofactor_matrix.append(cofactor_row)
 
-    return cofactor_matrix
+    adjugate_matrix = [[cofactor_matrix[j][i]
+                        for j in range(n)] for i in range(n)]
 
-
-def adjugate(matrix):
-    """Calculates the adjugate matrix of a matrix"""
-    if not isinstance(matrix, list) or not all(
-        isinstance(row, list) for row in matrix
-    ):
-        raise TypeError("matrix must be a list of lists")
-
-    if matrix == []:
-        raise ValueError("matrix must be a non-empty square matrix")
-
-    n = len(matrix)
-    for row in matrix:
-        if len(row) != n:
-            raise ValueError("matrix must be a non-empty square matrix")
-
-    if n == 1:
-        return [[1]]
-
-    cof_matrix = cofactor(matrix)
-    adj_matrix = [[cof_matrix[j][i] for j in range(n)] for i in range(n)]
-
-    return adj_matrix
+    return adjugate_matrix

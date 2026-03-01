@@ -1,16 +1,14 @@
 #!/usr/bin/env python3
-"""Module that performs element-wise arithmetic on numpy arrays."""
+"""
+Module `12-bracin_the_elements`
+This module contains a function that
+that performs element-wise addition,
+subtraction, multiplication, and division:
+"""
 
 
 def np_elementwise(mat1, mat2):
     """
-    Return element-wise sum, difference, product, and quotient of two arrays.
-
-    Args:
-        mat1 (numpy.ndarray): First array.
-        mat2 (numpy.ndarray or scalar): Second array.
-
-    Returns:
-        tuple: (sum, difference, product, quotient) arrays.
+    This function add, subtract, multiply, divide
     """
-    return mat1 + mat2, mat1 - mat2, mat1 * mat2, mat1 / mat2
+    return (mat1 + mat2, mat1 - mat2, mat1 * mat2, mat1 / mat2)

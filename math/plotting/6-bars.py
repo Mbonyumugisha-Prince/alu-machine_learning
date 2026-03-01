@@ -3,25 +3,34 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 np.random.seed(5)
-fruit = np.random.randint(0, 20, (4, 3))  # 4 fruits x 3 people
+fruit = np.random.randint(0, 20, (4, 3))
 
-people = ['Farrah', 'Fred', 'Felicia']
-fruits = ['Apples', 'Bananas', 'Oranges', 'Peaches']
-colors = ['red', 'yellow', '#ff8000', '#ffe5b4']  # colors per fruit
+apples = fruit[0]
+bananas = fruit[1]
+oranges = fruit[2]
+peaches = fruit[3]
 
-# Start with zeros for stacking
-bottom = np.zeros(fruit.shape[1])
+persons = ["Farrah", "Fred", "Felicia"]
+x = np.arange(len(persons))
 
-plt.figure(figsize=(8,6))
+plt.bar(x, apples, width=0.5, color="red", label="Apples")
+plt.bar(x, bananas, width=0.5, bottom=apples, color="yellow", label="Bananas")
+plt.bar(
+    x, oranges, width=0.5, bottom=apples + bananas, color="#ff8000", label="Oranges"
+)
+plt.bar(
+    x,
+    peaches,
+    width=0.5,
+    bottom=apples + bananas + oranges,
+    color="#ffe5b4",
+    label="Peaches",
+)
 
-# Stack each fruit row
-for i in range(fruit.shape[0]):
-    plt.bar(people, fruit[i], bottom=bottom, color=colors[i], width=0.5, label=fruits[i])
-    bottom += fruit[i]  # update bottom for next fruit
-
-plt.ylabel('Quantity of Fruit')
-plt.ylim(0, 80)
+plt.ylabel("Quantity of Fruit", fontsize="small")
+plt.title("Number of Fruit per Person", fontsize="small")
+plt.xticks(x, persons)
 plt.yticks(np.arange(0, 81, 10))
-plt.title('Number of Fruit per Person')
-plt.legend()
+plt.legend(loc="upper right", fontsize="small")
+
 plt.show()

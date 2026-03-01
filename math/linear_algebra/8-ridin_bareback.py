@@ -1,34 +1,37 @@
 #!/usr/bin/env python3
+
 """
-This module contains a function to perform matrix multiplication.
+Module `8-riding_bareback`
+This module contains a function that perform matrices
+multiplication using the bareback method.
 """
 
 
 def mat_mul(mat1, mat2):
     """
-    Multiply two 2D matrices element-wise.
+    Multiplies two 2D matrices (mat1 and mat2).
 
     Args:
-        mat1 (list of list of int/float): First 2D matrix.
-        mat2 (list of list of int/float): Second 2D matrix.
+        mat1 (list of lists of int/float): The first matrix.
+        mat2 (list of lists of int/float): The second matrix.
 
     Returns:
-        list of list: Result of matrix multiplication.
-        None: If matrices cannot be multiplied.
+        list of lists of int/float: The resulting matrix from
+        multiplying mat1 and mat2.
+        None: If the matrices cannot be multiplied due to
+        incompatible dimensions.
     """
-    # Number of columns in mat1 must equal number of rows in mat2
-    if len(mat1[0]) != len(mat2):
+    m, n = len(mat1), len(mat1[0])
+    p, q = len(mat2), len(mat2[0])
+
+    if n != p:
         return None
 
-    # Create result matrix
-    result = []
-    for i in range(len(mat1)):
-        row_result = []
-        for j in range(len(mat2[0])):
-            s = 0
-            for k in range(len(mat2)):
-                s += mat1[i][k] * mat2[k][j]
-            row_result.append(s)
-        result.append(row_result)
+    result = [[0 for _ in range(q)] for _ in range(m)]
+
+    for i in range(m):
+        for j in range(q):
+            for k in range(n):
+                result[i][j] += mat1[i][k] * mat2[k][j]
 
     return result
