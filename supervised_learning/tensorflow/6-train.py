@@ -12,6 +12,7 @@ forward_prop = __import__('2-forward_prop').forward_prop
 def train(X_train, Y_train, X_valid, Y_valid, layer_sizes, activations,
           alpha, iterations, save_path="/tmp/model.ckpt"):
     """Build, train, and save a neural network classifier."""
+    tf.reset_default_graph()
     nx = X_train.shape[1]
     classes = Y_train.shape[1]
 
@@ -39,11 +40,11 @@ def train(X_train, Y_train, X_valid, Y_valid, layer_sizes, activations,
                 t_acc = sess.run(accuracy, feed_dict={x: X_train, y: Y_train})
                 v_cost = sess.run(loss, feed_dict={x: X_valid, y: Y_valid})
                 v_acc = sess.run(accuracy, feed_dict={x: X_valid, y: Y_valid})
-                print("After {} iterations:".format(i))
-                print("\tTraining Cost: {}".format(t_cost))
-                print("\tTraining Accuracy: {}".format(t_acc))
-                print("\tValidation Cost: {}".format(v_cost))
-                print("\tValidation Accuracy: {}".format(v_acc))
+                print("After {} iterations:".format(i), flush=True)
+                print("\tTraining Cost: {}".format(t_cost), flush=True)
+                print("\tTraining Accuracy: {}".format(t_acc), flush=True)
+                print("\tValidation Cost: {}".format(v_cost), flush=True)
+                print("\tValidation Accuracy: {}".format(v_acc), flush=True)
             if i < iterations:
                 sess.run(train_op, feed_dict={x: X_train, y: Y_train})
         save_path = saver.save(sess, save_path)
