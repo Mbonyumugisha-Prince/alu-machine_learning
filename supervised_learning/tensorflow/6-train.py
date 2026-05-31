@@ -2,21 +2,31 @@
 """Module for building, training, and saving a neural network."""
 
 import tensorflow as tf
+calculate_accuracy = __import__('3-calculate_accuracy').calculate_accuracy
+calculate_loss = __import__('4-calculate_loss').calculate_loss
+create_placeholders = __import__('0-create_placeholders').create_placeholders
+create_train_op = __import__('5-create_train_op').create_train_op
+forward_prop = __import__('2-forward_prop').forward_prop
 
 
 def train(X_train, Y_train, X_valid, Y_valid, layer_sizes, activations,
           alpha, iterations, save_path="/tmp/model.ckpt"):
-    """Build, train, and save a neural network classifier."""
-    calculate_accuracy = (
-        __import__('3-calculate_accuracy').calculate_accuracy
-    )
-    calculate_loss = __import__('4-calculate_loss').calculate_loss
-    create_placeholders = (
-        __import__('0-create_placeholders').create_placeholders
-    )
-    create_train_op = __import__('5-create_train_op').create_train_op
-    forward_prop = __import__('2-forward_prop').forward_prop
+    """Build, train, and save a neural network classifier.
 
+    Args:
+        X_train: numpy.ndarray with training input data
+        Y_train: numpy.ndarray with training labels
+        X_valid: numpy.ndarray with validation input data
+        Y_valid: numpy.ndarray with validation labels
+        layer_sizes: list of nodes per layer
+        activations: list of activation functions per layer
+        alpha: learning rate
+        iterations: number of training iterations
+        save_path: path to save the model
+
+    Returns:
+        the path where the model was saved
+    """
     tf.reset_default_graph()
     nx = X_train.shape[1]
     classes = Y_train.shape[1]
