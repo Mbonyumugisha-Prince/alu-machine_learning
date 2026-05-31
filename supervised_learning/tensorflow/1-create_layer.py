@@ -23,6 +23,6 @@ def create_layer(prev, n, activation):
         kernel_initializer=initializer, name='layer'
     )
     if activation is not None:
-        with tf.name_scope('layer/'):
-            layer = activation(layer)
+        act_name = activation.__name__.capitalize()
+        layer = activation(layer, name='layer/' + act_name)
     return layer
