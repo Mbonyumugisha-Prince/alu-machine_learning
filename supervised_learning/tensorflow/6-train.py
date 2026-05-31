@@ -2,16 +2,21 @@
 """Module for building, training, and saving a neural network."""
 
 import tensorflow as tf
-calculate_accuracy = __import__('3-calculate_accuracy').calculate_accuracy
-calculate_loss = __import__('4-calculate_loss').calculate_loss
-create_placeholders = __import__('0-create_placeholders').create_placeholders
-create_train_op = __import__('5-create_train_op').create_train_op
-forward_prop = __import__('2-forward_prop').forward_prop
 
 
 def train(X_train, Y_train, X_valid, Y_valid, layer_sizes, activations,
           alpha, iterations, save_path="/tmp/model.ckpt"):
     """Build, train, and save a neural network classifier."""
+    calculate_accuracy = (
+        __import__('3-calculate_accuracy').calculate_accuracy
+    )
+    calculate_loss = __import__('4-calculate_loss').calculate_loss
+    create_placeholders = (
+        __import__('0-create_placeholders').create_placeholders
+    )
+    create_train_op = __import__('5-create_train_op').create_train_op
+    forward_prop = __import__('2-forward_prop').forward_prop
+
     tf.reset_default_graph()
     nx = X_train.shape[1]
     classes = Y_train.shape[1]
@@ -40,11 +45,11 @@ def train(X_train, Y_train, X_valid, Y_valid, layer_sizes, activations,
                 t_acc = sess.run(accuracy, feed_dict={x: X_train, y: Y_train})
                 v_cost = sess.run(loss, feed_dict={x: X_valid, y: Y_valid})
                 v_acc = sess.run(accuracy, feed_dict={x: X_valid, y: Y_valid})
-                print("After {} iterations:".format(i), flush=True)
-                print("\tTraining Cost: {}".format(t_cost), flush=True)
-                print("\tTraining Accuracy: {}".format(t_acc), flush=True)
-                print("\tValidation Cost: {}".format(v_cost), flush=True)
-                print("\tValidation Accuracy: {}".format(v_acc), flush=True)
+                print("After {} iterations:".format(i))
+                print("\tTraining Cost: {}".format(t_cost))
+                print("\tTraining Accuracy: {}".format(t_acc))
+                print("\tValidation Cost: {}".format(v_cost))
+                print("\tValidation Accuracy: {}".format(v_acc))
             if i < iterations:
                 sess.run(train_op, feed_dict={x: X_train, y: Y_train})
         save_path = saver.save(sess, save_path)
