@@ -5,7 +5,16 @@ import tensorflow as tf
 
 
 def evaluate(X, Y, save_path):
-    """Evaluate the output of a neural network."""
+    """Evaluate the output of a neural network.
+
+    Args:
+        X: numpy.ndarray containing the input data to evaluate
+        Y: numpy.ndarray containing the one-hot labels for X
+        save_path: location to load the model from
+
+    Returns:
+        the network's prediction, accuracy, and loss, respectively
+    """
     with tf.Session() as sess:
         saver = tf.train.import_meta_graph(save_path + '.meta')
         saver.restore(sess, save_path)
