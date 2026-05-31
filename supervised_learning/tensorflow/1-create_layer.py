@@ -19,7 +19,10 @@ def create_layer(prev, n, activation):
         mode="FAN_AVG"
     )
     layer = tf.layers.dense(
-        prev, n, activation=activation,
+        prev, n, activation=None,
         kernel_initializer=initializer, name='layer'
     )
+    if activation is not None:
+        with tf.name_scope('layer/'):
+            layer = activation(layer)
     return layer
