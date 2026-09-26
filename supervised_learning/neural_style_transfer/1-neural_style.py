@@ -4,6 +4,8 @@ Defines class NST that performs tasks for neural style transfer
 """
 
 
+import contextlib
+import os
 import numpy as np
 import tensorflow as tf
 
@@ -134,8 +136,10 @@ class NST:
 
         Saves the model in the instance attribute model
         """
-        VGG19_model = tf.keras.applications.VGG19(include_top=False,
-                                                  weights='imagenet')
+        with open(os.devnull, 'w') as devnull, \
+                contextlib.redirect_stdout(devnull):
+            VGG19_model = tf.keras.applications.VGG19(
+                include_top=False, weights='imagenet')
         VGG19_model.save("VGG19_base_model")
         custom_objects = {'MaxPooling2D': tf.keras.layers.AveragePooling2D}
 
