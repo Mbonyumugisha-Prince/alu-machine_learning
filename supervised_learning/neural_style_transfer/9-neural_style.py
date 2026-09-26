@@ -196,10 +196,8 @@ class NST:
         if len(input_layer.shape) != 4:
             raise TypeError("input_layer must be a tensor of rank 4")
         _, h, w, c = input_layer.shape
-        product = h * w
-        features = tf.reshape(input_layer, (product, c))
-        gram = tf.matmul(features, features, transpose_a=True)
-        gram = tf.expand_dims(gram, axis=0)
+        product = int(h * w)
+        gram = tf.einsum('bijc,bijd->bcd', input_layer, input_layer)
         gram /= tf.cast(product, tf.float32)
         return (gram)
 
@@ -244,10 +242,13 @@ class NST:
             raise TypeError("style_output must be a tensor of rank 4")
         one, h, w, c = style_output.shape
         if not isinstance(gram_target, (tf.Tensor, tf.Variable)) or \
-           len(gram_target.shape) != 3:
+           len(gram_target.shape) != 3 or gram_target.shape != (1, c, c):
             raise TypeError(
                 "gram_target must be a tensor of shape [1, {}, {}]".format(
                     c, c))
+        gram_style = self.gram_matrix(style_output)
+        diff = tf.reduce_mean(tf.square(gram_style - gram_target))
+        return diff
 
     def style_cost(self, style_outputs):
         """
@@ -265,6 +266,13 @@ class NST:
             raise TypeError(
                 "style_outputs must be a list with a length of {}".format(
                     length))
+        weight = 1 / length
+        style_cost = 0
+        for i in range(length):
+            style_cost += (
+                self.layer_style_cost(style_outputs[i],
+                                      self.gram_style_features[i]) * weight)
+        return style_cost
 
     def content_cost(self, content_output):
         """
@@ -282,6 +290,7 @@ class NST:
            content_output.shape != shape:
             raise TypeError(
                 "content_output must be a tensor of shape {}".format(shape))
+        return tf.reduce_mean(tf.square(content_output - self.content_feature))
 
     def total_cost(self, generated_image):
         """
@@ -302,6 +311,13 @@ class NST:
            generated_image.shape != shape:
             raise TypeError(
                 "generated_image must be a tensor of shape {}".format(shape))
+        VGG19_model = tf.keras.applications.vgg19
+        preprocessed = VGG19_model.preprocess_input(generated_image * 255)
+        outputs = self.model(preprocessed)
+        J_content = self.content_cost(outputs[-1])
+        J_style = self.style_cost(list(outputs[:-1]))
+        J = (self.alpha * J_content) + (self.beta * J_style)
+        return (J, J_content, J_style)
 
     def compute_grads(self, generated_image):
         """
@@ -323,6 +339,11 @@ class NST:
            generated_image.shape != shape:
             raise TypeError(
                 "generated_image must be a tensor of shape {}".format(shape))
+        with tf.GradientTape() as tape:
+            tape.watch(generated_image)
+            J_total, J_content, J_style = self.total_cost(generated_image)
+        gradients = tape.gradient(J_total, generated_image)
+        return (gradients, J_total, J_content, J_style)
 
     def generate_image(self, iterations=1000, step=None, lr=0.01,
                        beta1=0.9, beta2=0.99):
@@ -357,15 +378,15 @@ class NST:
         """
         if type(iterations) is not int:
             raise TypeError("iterations must be an integer")
-        if iterations < 0:
+        if iterations <= 0:
             raise ValueError("iterations must be positive")
         if step is not None and type(step) is not int:
             raise TypeError("step must be an integer")
-        if step is not None and (step < 0 or step > iterations):
+        if step is not None and (step <= 0 or step >= iterations):
             raise ValueError("step must be positive and less than iterations")
         if type(lr) is not int and type(lr) is not float:
             raise TypeError("lr must be a number")
-        if lr < 0:
+        if lr <= 0:
             raise ValueError("lr must be positive")
         if type(beta1) is not float:
             raise TypeError("beta1 must be a float")
@@ -375,6 +396,24 @@ class NST:
             raise TypeError("beta2 must be a float")
         if beta2 < 0 or beta2 > 1:
             raise ValueError("beta2 must be in the range [0, 1]")
-        generated_image = self.content_image
-        cost = 0
-        return generated_image, cost
+
+        generated_image = tf.Variable(self.content_image)
+        optimizer = tf.train.AdamOptimizer(learning_rate=lr, beta1=beta1,
+                                           beta2=beta2)
+        best_cost = None
+        best_image = None
+
+        for i in range(iterations + 1):
+            grads, J_total, J_content, J_style = self.compute_grads(
+                generated_image)
+            if best_cost is None or J_total.numpy() < best_cost:
+                best_cost = J_total.numpy()
+                best_image = generated_image.numpy()[0]
+            if step is not None and (i % step == 0 or i == iterations):
+                print("Cost at iteration {}: {}, content {}, style {}".format(
+                    i, J_total, J_content, J_style))
+            if i != iterations:
+                optimizer.apply_gradients([(grads, generated_image)])
+                generated_image.assign(
+                    tf.clip_by_value(generated_image, 0, 1))
+        return (best_image, best_cost)
